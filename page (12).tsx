@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { requireUser, parentOwnsChild } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
+export async function POST(req: Request) { const parent = await requireUser("PARENT"); const body = await req.json().catch(() => null); if (!parent || !body?.childId || !(await parentOwnsChild(parent.id, body.childId))) return NextResponse.json({ error: "غير مصرح" }, { status: 403 }); const profile = await prisma.childProfile.findUnique({ where: { userId: body.childId } }); if (!profile) return NextResponse.json({ error: "غير موجود" }, { status: 404 }); await prisma.weeklyChallenge.create({ data: { childProfileId: profile.id, title: String(body.title).slice(0, 80), description: String(body.description).slice(0, 240), pointsReward: Math.min(100, Math.max(5, Number(body.pointsReward) || 20)), deadline: new Date(Date.now() + 7 * 864e5) } }); return NextResponse.json({ ok: true }); }
