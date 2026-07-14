@@ -1,115 +1,127 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { PiggyBank, Heart, ShoppingBag, Trophy, MessageSquare, Gamepad2, ShoppingCart } from 'lucide-react';
+import React, { useState } from "react";
+import { ArrowUpRight, TrendingUp, Heart, Wallet, Plus, Coins } from "lucide-react";
 
-export default function KidDashboardPage() {
+export default function ChildDashboard() {
+  // الأرصدة الافتراضية
+  const [spending, setSpending] = useState(45.0);
+  const [saving, setSaving] = useState(120.0);
+  const [giving, setGiving] = useState(15.0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [amount, setAmount] = useState("");
+
+  const handleDeposit = () => {
+    const numAmount = parseFloat(amount);
+    if (!numAmount || numAmount <= 0) return;
+
+    // قانون الحصالات الثلاث الذكي (50% إنفاق، 40% ادخار، 10% عطاء)
+    setSpending((prev) => prev + numAmount * 0.5);
+    setSaving((prev) => prev + numAmount * 0.4);
+    setGiving((prev) => prev + numAmount * 0.1);
+
+    setAmount("");
+    setModalOpen(false);
+  };
+
   return (
-    <div className="space-y-8">
-      {/* قائمة الخيارات والمسارات الإضافية للطفل */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link 
-          href="/kid/assistant" 
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white p-5 rounded-2xl shadow-sm hover:shadow-md transition flex items-center justify-between group cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2.5 rounded-xl">
-              <MessageSquare className="w-6 h-6" />
-            </div>
-            <div className="text-right">
-              <h4 className="font-bold text-sm md:text-base">دردش مع كوتش ذُخر</h4>
-              <p className="text-white/80 text-xs">اسألني أي سؤال عن الادخار والمال!</p>
-            </div>
-          </div>
-        </Link>
+    <div className="space-y-6">
+      {/* بطاقة الرصيد الإجمالي */}
+      <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 rounded-3xl shadow-xl shadow-emerald-100 relative overflow-hidden">
+        <div className="absolute -left-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+        <p className="text-sm opacity-90">مجموع مدخراتك الذكية 💰</p>
+        <h1 className="text-3xl font-extrabold mt-1">{(spending + saving + giving).toFixed(2)} ر.س</h1>
 
-        <Link 
-          href="/kid/game" 
-          className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-sm hover:shadow-md transition flex items-center justify-between group cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2.5 rounded-xl">
-              <Gamepad2 className="w-6 h-6" />
-            </div>
-            <div className="text-right">
-              <h4 className="font-bold text-sm md:text-base">تحدي ذُخر المالي</h4>
-              <p className="text-white/80 text-xs">العب وجاوب على الأسئلة واكسب نقاطاً!</p>
-            </div>
-          </div>
-        </Link>
-
-        <Link 
-          href="/kid/store" 
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-5 rounded-2xl shadow-sm hover:shadow-md transition flex items-center justify-between group cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2.5 rounded-xl">
-              <ShoppingCart className="w-6 h-6" />
-            </div>
-            <div className="text-right">
-              <h4 className="font-bold text-sm md:text-base">متجر الجوائز</h4>
-              <p className="text-white/80 text-xs">استبدل نقاطك الذهبية بمكافآت مذهلة!</p>
-            </div>
-          </div>
-        </Link>
-      </div>
-
-      {/* عرض الحصالات الثلاثة الموزعة بالتساوي */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* حصالة الادخار */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 left-0 h-1.5 bg-emerald-500" />
-          <div className="bg-emerald-50 text-emerald-600 p-4 rounded-2xl w-fit mb-4">
-            <PiggyBank className="w-7 h-7" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-800 mb-1">حصالة الادخار (الأهداف)</h3>
-          <p className="text-slate-400 text-xs mb-4">لجمع المال من أجل تحقيق أهدافك وأحلامك الكبيرة في المستقبل.</p>
-          <span className="text-3xl font-black text-emerald-600">120.00 <span className="text-sm font-bold text-slate-500">ريال</span></span>
-        </div>
-
-        {/* حصالة الإنفاق */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 left-0 h-1.5 bg-blue-500" />
-          <div className="bg-blue-50 text-blue-600 p-4 rounded-2xl w-fit mb-4">
-            <ShoppingBag className="w-7 h-7" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-800 mb-1">حصالة الإنفاق (اليومي)</h3>
-          <p className="text-slate-400 text-xs mb-4">لشراء وجباتك، حلوياتك المفضلة، أو احتياجاتك اليومية الخفيفة.</p>
-          <span className="text-3xl font-black text-blue-600">45.50 <span className="text-sm font-bold text-slate-500">ريال</span></span>
-        </div>
-
-        {/* حصالة العطاء */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 left-0 h-1.5 bg-rose-500" />
-          <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl w-fit mb-4">
-            <Heart className="w-7 h-7" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-800 mb-1">حصالة العطاء (المسؤولية)</h3>
-          <p className="text-slate-400 text-xs mb-4">لمساعدة الآخرين، أو تقديم هدايا لعائلتك وأصدقائك الرائعين.</p>
-          <span className="text-3xl font-black text-rose-600">15.00 <span className="text-sm font-bold text-slate-500">ريال</span></span>
+        <div className="mt-6 flex justify-between items-center bg-white/10 p-3 rounded-2xl">
+          <p className="text-xs">رصيدك يحميك للمستقبل، واصل الادخار!</p>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="bg-white text-emerald-600 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" /> أضف مصروفي
+          </button>
         </div>
       </div>
 
-      {/* الهدف النشط للطفل */}
-      <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-amber-500" />
-          هدفي الكبير الحالي 🎯
-        </h3>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl">
-          <div>
-            <h4 className="font-bold text-slate-700">شراء جهاز ألعاب نينتندو سويتش 🎮</h4>
-            <p className="text-slate-400 text-xs mt-0.5">الهدف الكلي: 1200 ريال | تم ادخار 120 ريال حتى الآن في الصندوق.</p>
-          </div>
-          <div className="w-full md:w-1/3">
-            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-1">
-              <div className="bg-emerald-500 h-full rounded-full" style={{ width: '10%' }} />
+      {/* عرض الصناديق الثلاثة التفاعلية */}
+      <div className="space-y-3">
+        <h3 className="font-bold text-slate-700 text-sm">صناديق حصالتي الذكية</h3>
+
+        {/* 1. حصالة الإنفاق */}
+        <div className="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
             </div>
-            <span className="text-xs text-slate-500 font-semibold">نسبة التقدم المنجزة: 10%</span>
+            <div>
+              <h4 className="font-bold text-slate-700 text-sm">حصالة الإنفاق (50%)</h4>
+              <p className="text-[10px] text-slate-400">لألعابك المفضلة ومشترياتك اليومية</p>
+            </div>
           </div>
+          <p className="font-extrabold text-blue-600 text-base">{spending.toFixed(2)} ر.س</p>
+        </div>
+
+        {/* 2. حصالة الادخار */}
+        <div className="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-700 text-sm">حصالة الادخار للأهداف (40%)</h4>
+              <p className="text-[10px] text-slate-400">لشراء الأشياء الثمينة في المستقبل</p>
+            </div>
+          </div>
+          <p className="font-extrabold text-amber-600 text-base">{saving.toFixed(2)} ر.س</p>
+        </div>
+
+        {/* 3. حصالة العطاء والصدقة */}
+        <div className="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center">
+              <Heart className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-700 text-sm">حصالة العطاء والمساعدة (10%)</h4>
+              <p className="text-[10px] text-slate-400">لمساعدة الآخرين وصنع الخير</p>
+            </div>
+          </div>
+          <p className="font-extrabold text-rose-600 text-base">{giving.toFixed(2)} ر.س</p>
         </div>
       </div>
+
+      {/* الـ Modal المخصص لإضافة مصروف وإعادة توزيعه برمجياً */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl text-right" dir="rtl">
+            <h3 className="text-base font-bold text-slate-800 mb-2">أدخل مبلغ مصروفك اليومي 🪙</h3>
+            <p className="text-xs text-slate-400 mb-4">
+              سيقوم نظام ذخر بتقسيم المبلغ تلقائياً لحمايتك وتعليمك التخطيط المالي الذكي.
+            </p>
+            <input
+              type="number"
+              placeholder="مثال: 50"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full text-center py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleDeposit}
+                className="flex-1 py-3 bg-emerald-500 text-white font-bold rounded-xl text-xs hover:bg-emerald-600 transition cursor-pointer"
+              >
+                توزيع وتقسيم الرصيد
+              </button>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
