@@ -1,1 +1,113 @@
+// prisma/schema.prisma
 
+datasource db {
+  provider = "postgresql" // يمكنك تغييرها إلى sqlite أو mysql حسب بيئة التشغيل لديك
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  PARENT
+  CHILD
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum GoalStatus {
+  IN_PROGRESS
+  ACHIEVED
+}
+
+enum RewardStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CLAIMED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  passwordHash  String
+  role          Role      @default(CHILD)
+  points        Int       @default(0) // يُستخدم فقط عندما يكون الدور CHILD
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // علاقة ذاتية لربط الآباء بالأبناء (الأب لديه عدة أبناء، والابن يتبع لأب واحد)
+  parentId      String?
+  parent        User?     @relation("ParentToChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children      User[]    @relation("ParentToChildren")
+
+  // العلاقات المالية والتفاعلية للأطفال
+  transactions  Transaction[]
+  savingsGoals  SavingsGoal[]
+  rewards       Reward[]          @relation("CreatedRewards") // الجوائز المضافة من الأب
+  redeemedRewards RedeemedReward[] @relation("ChildRedeemed") // مكافآت استردها الطفل
+  challenges    WeeklyChallenge[]
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  amount      Float
+  type        TransactionType
+  category    String          // أمثلة: "حلويات", "ألعاب", "ادخار", "تعليم", "تبرع"
+  description String?
+  createdAt   DateTime        @default(now())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavingsGoal {
+  id            String     @id @default(cuid())
+  title         String
+  targetAmount  Float
+  currentAmount Float      @default(0)
+  status        GoalStatus @default(IN_PROGRESS)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reward {
+  id               String           @id @default(cuid())
+  title            String           // اسم المكافأة (مثال: "ساعة ألعاب فيديو")
+  pointsCost       Int              // تكلفة الاسترداد بالنقاط
+  description      String?
+  isRealWorld      Boolean          @default(true) // هل هي جائزة عينية/حقيقية يوافق عليها الأب
+  approvedByParent Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  userId           String           // الأب الذي قام بإنشاء المكافأة
+  parent           User             @relation("CreatedRewards", fields: [userId], references: [id], onDelete: Cascade)
+  redeemedBy       RedeemedReward[]
+}
+
+model RedeemedReward {
+  id          String       @id @default(cuid())
+  rewardId    String
+  reward      Reward       @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  childId     String
+  child       User         @relation("ChildRedeemed", fields: [childId], references: [id], onDelete: Cascade)
+  status      RewardStatus @default(PENDING) // حالة الطلب بانتظار موافقة الأب
+  redeemedAt  DateTime     @default(now())
+}
+
+model WeeklyChallenge {
+  id          String   @id @default(cuid())
+  title       String   // اسم التحدي الذكي (مثال: "بطل الادخار")
+  description String   // تفاصيل التحدي
+  pointsReward Int     // عدد النقاط الممنوحة عند إتمام التحدي
+  isCompleted Boolean  @default(false)
+  deadline    DateTime
+  childId     String
+  child       User     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
