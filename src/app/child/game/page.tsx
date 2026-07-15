@@ -1,1 +1,2 @@
-
+import Link from "next/link"; import TriviaGame from "@/components/TriviaGame";
+export default function GamePage() { return <main className="shell"><Link href="/child" className="navlink inline-block bg-white shadow-sm">→ لوحة التحكم</Link><div className="my-7 text-center"><p className="font-bold text-[#087f5b]">تعلّم والعب واربح</p><h1 className="text-3xl font-black">تحدي الوعي المالي</h1></div><TriviaGame/></main>; }
