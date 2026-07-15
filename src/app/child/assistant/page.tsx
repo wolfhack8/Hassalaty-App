@@ -1,1 +1,2 @@
-
+import Link from "next/link"; import KidAssistantChat from "@/components/KidAssistantChat";
+export default function AssistantPage() { return <main className="shell"><Link href="/child" className="navlink inline-block bg-white shadow-sm">→ لوحة التحكم</Link><div className="my-7 text-center"><p className="font-bold text-[#087f5b]">المساعد المستوحى من «نقد»</p><h1 className="text-3xl font-black">اسأل ذُخر</h1></div><KidAssistantChat/></main>; }
